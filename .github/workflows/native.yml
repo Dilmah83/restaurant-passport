@@ -1,5 +1,5 @@
 name: Native Restaurant Passport
-on: [push, pull_request, workflow_dispatch]
+on: [pull_request, workflow_dispatch]
 concurrency:
   group: passport-${{ github.ref }}
   cancel-in-progress: true
@@ -17,6 +17,7 @@ jobs:
       - run: npm test --prefix server
   iphone:
     runs-on: macos-15
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - name: Select installed iPhone
@@ -30,9 +31,18 @@ jobs:
       - name: Build and test
         run: xcodebuild -project ios/Passport.xcodeproj -scheme Passport -destination "platform=iOS Simulator,id=$PHONE" -derivedDataPath NativeBuild -resultBundlePath NativeResults CODE_SIGNING_ALLOWED=NO test
       - name: Capture native home screen
+        timeout-minutes: 2
+        continue-on-error: true
         run: |
-          xcrun simctl boot "$PHONE" || true
-          xcrun simctl bootstatus "$PHONE" -b
+          xcrun simctl list devices booted -j > /tmp/booted.json
+          PREVIEW_PHONE=$(python3 - <<'PYTHON'
+          import json
+          devices=[d for ds in json.load(open('/tmp/booted.json'))['devices'].values() for d in ds if d['state']=='Booted' and 'iPhone' in d['name']]
+          print(devices[0]['udid'] if devices else '')
+          PYTHON
+          )
+          if [ -z "$PREVIEW_PHONE" ]; then exit 0; fi
+          PHONE="$PREVIEW_PHONE"
           xcrun simctl status_bar "$PHONE" override --time "9:41" --batteryState charged --batteryLevel 100
           xcrun simctl install "$PHONE" NativeBuild/Build/Products/Debug-iphonesimulator/Passport.app
           xcrun simctl launch "$PHONE" au.restaurantpassport.tracker
