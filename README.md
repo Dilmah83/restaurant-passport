@@ -2,3 +2,9 @@
 Free app, no account needed to *use* it. To put it on your iPhone you host these files for free on GitHub Pages.
 See the chat instructions, or: create a free account at github.com > New repository (Public, name: restaurant-passport) > "uploading an existing file" > upload ALL files in this folder (not the folder itself) > Commit > Settings > Pages > Deploy from branch "main" / root > Save. After ~2 minutes open https://YOURNAME.github.io/restaurant-passport/ in Safari > Share > Add to Home Screen.
 Your data stays on your phone only. Make backups (Backup tab).
+
+## Native iPhone / Xcode
+
+The `ios/` directory contains a native SwiftUI iPhone app with a black-and-white design and bundled food-photo backgrounds. It preserves the original visit/saved-place features through explicit backup import, adds Undo/recovery, and provides Apple Maps nearby discovery. Optional server-backed Google popularity is clearly separated from unavailable real-time trend growth.
+
+See [Xcode setup and migration](ios/README.md) and [optional Google discovery server](server/README.md). Existing browser files and saved data are not changed by this addition.

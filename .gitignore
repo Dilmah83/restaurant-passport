@@ -1,0 +1,10 @@
+.DS_Store
+ios/.build/
+ios/.swiftpm/
+**/xcuserdata/
+**/__pycache__/
+NativeBuild/
+NativeResults.xcresult/
+node_modules/
+.env
+*.xcuserstate
